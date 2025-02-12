@@ -20,7 +20,7 @@ type Task struct {
 	IsCompleted bool
 }
 
-func ReadTasksFromCSV(filename string) ([]Task, error) {
+func readTasksFromCSV(filename string) ([]Task, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, fmt.Errorf("error opening file: %w", err)
@@ -59,7 +59,7 @@ func formatTimeAgo(timeStr string) string {
 	return diff
 }
 
-func PrintTasks(tasks []Task) {
+func printTasks(tasks []Task) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 8, 1, '\t', tabwriter.AlignRight)
 
 	fmt.Fprintln(w, "ID\tDescription\tCreated At\tStatus")
@@ -80,25 +80,15 @@ var listCmd = &cobra.Command{
 	Short: "List all tasks",
 	Long:  `List all tasks in the todo list`,
 	Run: func(cmd *cobra.Command, args []string) {
-		tasks, err := ReadTasksFromCSV("datastore.csv")
+		tasks, err := readTasksFromCSV("datastore.csv")
 		if err != nil {
 			fmt.Println("Error reading tasks:", err)
 			return
 		}
-		PrintTasks(tasks)
+		printTasks(tasks)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(listCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// listCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// listCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
