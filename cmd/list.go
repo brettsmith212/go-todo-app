@@ -80,7 +80,7 @@ var listCmd = &cobra.Command{
 	Short: "List all tasks",
 	Long:  `List all tasks in the todo list`,
 	Run: func(cmd *cobra.Command, args []string) {
-		tasks, err := ReadTasksFromCSV("datastore.csv")
+		tasks, err := ReadTasksFromCSV(Database)
 		if err != nil {
 			fmt.Println("Error reading tasks: ", err)
 			return
