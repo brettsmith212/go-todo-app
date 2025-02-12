@@ -1,40 +1,59 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-
-*/
 package cmd
 
 import (
+	"encoding/csv"
 	"fmt"
+	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 )
 
+func getCurrentTimestamp() string {
+	return time.Now().Format("2006-01-02T15:04:05-07:00")
+}
+
+func writeToCSV(filename string, task Task) error {
+	// Open file in append mode, create if doesn't exist
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return fmt.Errorf("error opening file: %w", err)
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	record := []string{fmt.Sprint(task.ID), task.Description, task.CreatedAt, fmt.Sprint(task.IsCompleted)}
+	if err := writer.Write(record); err != nil {
+		return fmt.Errorf("error writing record: %w", err)
+	}
+
+	fmt.Printf("Successfully added task: %+v\n", task)
+	return nil
+}
+
 // addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:   "add",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Add a new task",
+	Long:  "Add a new task to the todo list",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("add called")
+		id := 100
+		description := "Did this work?"
+		createdAt := getCurrentTimestamp()
+
+		task := Task{id, description, createdAt, false}
+
+		err := writeToCSV("datastore.csv", task)
+		if err != nil {
+			fmt.Println("Error writing task: ", err)
+			return
+		}
+
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(addCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// addCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// addCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -20,7 +20,7 @@ type Task struct {
 	IsCompleted bool
 }
 
-func readTasksFromCSV(filename string) ([]Task, error) {
+func ReadTasksFromCSV(filename string) ([]Task, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, fmt.Errorf("error opening file: %w", err)
@@ -80,9 +80,9 @@ var listCmd = &cobra.Command{
 	Short: "List all tasks",
 	Long:  `List all tasks in the todo list`,
 	Run: func(cmd *cobra.Command, args []string) {
-		tasks, err := readTasksFromCSV("datastore.csv")
+		tasks, err := ReadTasksFromCSV("datastore.csv")
 		if err != nil {
-			fmt.Println("Error reading tasks:", err)
+			fmt.Println("Error reading tasks: ", err)
 			return
 		}
 		printTasks(tasks)
